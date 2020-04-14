@@ -1,0 +1,13 @@
+Did:
+To Do:
+1. I have an interactive allocation on, 3 tasks, 2 cpus-per-task, 2 nodes 
+   himem[01-02]
+
+    Figure out why :
+    a) srun -n2 --mpi=openmpi --jobid=2431623 ./a.out
+       --> Spawns two mpi-tasks (both taskID=0), one on each node
+
+    b) srun --mpi=openmpi --jobid=2431623 mpirun -n 2 ./a.out
+       --> Spawns 4 mpi-tasks. It seems like it is the equivalent to running
+           mpirun -n 2 on each node
+   

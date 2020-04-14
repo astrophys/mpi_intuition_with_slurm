@@ -81,10 +81,12 @@ int main(int argc, char * argv[])
     for(step=0; step<nSteps; step++){
         if(taskID == 0){
             //printf("Step : %i\n", step);
-            task_result = compute_integral(xmin, xmax, ntasks, taskID, step, hostname);
+            task_result = compute_integral(xmin, xmax, ntasks, taskID, step,
+                                           hostname);
 
         }else{
-            task_result = compute_integral(xmin, xmax, ntasks, taskID, step, hostname);
+            task_result = compute_integral(xmin, xmax, ntasks, taskID, step,
+                                           hostname);
         }
         MPI_Barrier(MPI_COMM_WORLD);    // Ensure every task completes
 
@@ -94,8 +96,8 @@ int main(int argc, char * argv[])
 
         if(taskID == 0)
         {
-            printf("Step %i Integration from %f to %f of x2 = %f\n\n", step, xmin,
-                   xmax, glob_result);
+            printf("Step %i host %s Integration from %f to %f of x2 = %f\n\n", step,
+                   hostname, xmin, xmax, glob_result);
             fflush(stdout);
         }
         glob_result=0;
