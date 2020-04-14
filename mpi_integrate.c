@@ -33,7 +33,7 @@ void print_message(char * str, int verbose)
 }
 */
 
-double compute_integral(int xmin, int xmax, int ntasks, int taskID)
+double compute_integral(int xmin, int xmax, int ntasks, int taskID, int step, char * hostname)
 {
     /* Get each Task's Range.*/
     double task_xmin = taskID * (xmax - xmin) / ntasks;
@@ -41,7 +41,7 @@ double compute_integral(int xmin, int xmax, int ntasks, int taskID)
     double dx   = 0.00001;
     double task_result = 0;
     double i=0;
-    printf("Task %i : [%.3f,%.3f]\n", taskID, task_xmin, task_xmax);
+    printf("Task %i step %i host %s : [%.3f,%.3f]\n", taskID, step, hostname, task_xmin, task_xmax);
     fflush(stdout);
     
     
@@ -66,22 +66,25 @@ int main(int argc, char * argv[])
     double xmin =  0;
     double task_result = 0;
     double glob_result = 0;
+    char hostname[250];
+    hostname[249]='\0';
 
     /* MPI Initializations */
     MPI_Init(&argc, &argv);
     MPI_Comm_rank(MPI_COMM_WORLD, &taskID);
     MPI_Comm_size(MPI_COMM_WORLD, &ntasks);
-    printf("Hello World from Task %i\n", taskID);
+    gethostname(hostname, 1023);
+    printf("Hello World from Task %i on %s\n", taskID,hostname);
 
 
     /* Master Loop */ 
     for(step=0; step<nSteps; step++){
         if(taskID == 0){
             //printf("Step : %i\n", step);
-            task_result = compute_integral(xmin, xmax, ntasks, taskID);
+            task_result = compute_integral(xmin, xmax, ntasks, taskID, step, hostname);
 
         }else{
-            task_result = compute_integral(xmin, xmax, ntasks, taskID);
+            task_result = compute_integral(xmin, xmax, ntasks, taskID, step, hostname);
         }
         MPI_Barrier(MPI_COMM_WORLD);    // Ensure every task completes
 
@@ -91,7 +94,7 @@ int main(int argc, char * argv[])
 
         if(taskID == 0)
         {
-            printf("Step %i Integration from %f to %f of x2 = %f\n", step, xmin,
+            printf("Step %i Integration from %f to %f of x2 = %f\n\n", step, xmin,
                    xmax, glob_result);
             fflush(stdout);
         }
