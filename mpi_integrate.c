@@ -64,8 +64,6 @@ int main(int argc, char * argv[])
     int verbose = 0;
     double xmax = 1000;
     double xmin =  0;
-    double task_xmax = 0;
-    double task_xmin = 0;
     double task_result = 0;
     double glob_result = 0;
 
