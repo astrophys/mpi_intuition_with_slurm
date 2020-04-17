@@ -55,7 +55,7 @@ try to access the allocation.
          (from any shell...)
     $ srun --mpi=openmpi --jobid=XXXX mpirun -np 2 ./a.out # WHOOPS! This is basically running two instances
                                                            # of `mpirun -np 2 ./a.out`, one on each node
-     
+                                                           # For a total of 4 MPI tasks, not the 2 expected
 
 
 ### Example 3 - Batch
