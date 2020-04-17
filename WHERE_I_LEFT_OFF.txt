@@ -4,10 +4,28 @@ To Do:
    himem[01-02]
 
     Figure out why :
-    a) srun -n2 --mpi=openmpi --jobid=2431623 ./a.out
+    a) on qmaster01
+
+    b) srun -n2 --mpi=openmpi --jobid=2431623 ./a.out
        --> Spawns two mpi-tasks (both taskID=0), one on each node
 
-    b) srun --mpi=openmpi --jobid=2431623 mpirun -n 2 ./a.out
+    c) srun --mpi=openmpi --jobid=2431623 mpirun -n 2 ./a.out
        --> Spawns 4 mpi-tasks. It seems like it is the equivalent to running
            mpirun -n 2 on each node
+
    
+    This works : 
+    a) Allocate interactive session : 
+            module load openmpi-1.8/gcc-4.9.2
+            salloc --ntasks=2 --nodes=2     # Gets two nodes with 1 core each
+                (within new shell...)
+            mpirun -np 2 ./a.out            # Works as expected.
+            mpirun -np 4 ./a.out            # Fails b/c not enough cores in tasks
+        
+    b) Allocate interactive session : 
+            module load openmpi-1.8/gcc-4.9.2
+            salloc --ntasks=2 --nodes=2 --nodelist=node[14,15] --cpus-per-task=2
+                (within new shell...)
+            mpirun -np 2 ./a.out            # Works as expected
+            mpirun -np 3 ./a.out            # Fails, probably b/c need ntasks == np
+            
