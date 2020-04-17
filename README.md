@@ -21,7 +21,9 @@ compilers and commands in your shell `PATH` is acceptable.
 ### Interactive allocation
 In order for these examples to work, you need to ensure that the number of
 `--ntasks` you request is greater than or equal to the number of cores you request
-when with `mpirun` (see the `-np` argument).
+when with `mpirun` (see the `-np` argument). Also, when you have an interactive
+allocation, it is VERY important to have a secure connection. If your connection
+drops, then your interactive session gets released.
 
 ##### Example 1
 Working on the login node to the cluster, we make an allocation.
@@ -36,18 +38,30 @@ When you execute `mpirun`, log into the nodes and run `top` to inspect.
          (within new shell...)       
     $ mpirun -np 2 ./a.out            # Works as expected, both cores, one on each node does work. Use a seperate shell to log into each node in allocation and run `top`
 
+Once `a.out` is finished, you still have the allocation you requested in SLURM. 
+This is particularly useful if you need a relatively large allocation on a SLURM
+cluster for interactive work. 
 
 
 ##### Example 2 - what NOT to do
 Working on the login node to the cluster, we make an allocation. Then from any shell
 try to access the allocation.
 
-     $ module load openmpi-1.8/gcc-4.9.2
-     $ mpicc mpi_integrate.c 
-     $ salloc --ntasks=2 --nodes=2     # Gets two nodes with 1 core each
-          (from any shell...)
-     $ srun --mpi=openmpi --jobid=XXXX mpirun -np 2 ./a.out # WHOOPS! This is basically running two instances of `mpirun -np 2 ./a.out`, one on each node
+    $ module load openmpi-1.8/gcc-4.9.2
+    $ mpicc mpi_integrate.c 
+    $ salloc --ntasks=2 --nodes=2     # Gets two nodes with 1 core each
+         (from any shell...)
+    $ srun --mpi=openmpi --jobid=XXXX mpirun -np 2 ./a.out # WHOOPS! This is basically running two instances of `mpirun -np 2 ./a.out`, one on each node
      
 
 
+### Batch Allocation
+##### Example 3 
+This is a batch job. The script does the same work as Example 1.
 
+    $ sbatch submit.sh
+
+
+## Key Take Aways
+1. Number of cores requested by `mpirun` (see `mpirun -np`) must be less than or equal to number of tasks requested from SLURM (see `salloc --ntasks`)
+2. When running an interactive MPI job. DO NOT USE `srun` in combination with `salloc`
