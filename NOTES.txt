@@ -1,3 +1,0 @@
-1. When using Pulse when working from home, MUST keep it up to date.
-   If pulse kicks you off, you lose your interactive allocation.
-
