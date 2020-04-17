@@ -26,7 +26,7 @@ when with `mpirun` (see the `-np` argument). Also, when you have an interactive
 allocation, it is VERY important to have a secure connection. If your connection
 drops, then your interactive session gets released.
 
-##### Example 1
+#### Example 1
 Working on the login node to the cluster, we make an allocation.
 `salloc` spawns a new shell (still on the login node). From this new shell, we can
 run our MPI job. SLURM behind the scenes dispatches the work from the login node
@@ -46,7 +46,7 @@ This is particularly useful if you need a relatively large interactive allocatio
 a SLURM cluster. 
 
 
-##### Example 2 - what NOT to do
+#### Example 2 - what NOT to do
 Working on the login node to the cluster, we make an allocation. Then from any shell
 try to access the allocation.
 
@@ -60,7 +60,7 @@ try to access the allocation.
 
 
 ### Batch Allocation
-##### Example 3 
+#### Example 3 
 This is a batch job. The script does the same work as Example 1, non-interactively.
 
     $ sbatch submit.sh
