@@ -65,3 +65,4 @@ This is a batch job. The script does the same work as Example 1.
 ## Key Take Aways
 1. Number of cores requested by `mpirun` (see `mpirun -np`) must be less than or equal to number of tasks requested from SLURM (see `salloc --ntasks`)
 2. When running an interactive MPI job. DO NOT USE `srun` in combination with `salloc`
+3. Presumably if you want to utilize MPI and OpenMP, you'd want to specify `salloc --cpus-per-task`. The would allow each MPI task to utilize multiple cores. Still needs tested.
