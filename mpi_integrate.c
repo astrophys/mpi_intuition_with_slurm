@@ -15,33 +15,25 @@
 
 
 /* 
- *  y-squared.
+ *  Returns y(x) = x**2
  */
 double y(double x)
 {
     return x*x;
 }
 
-/*
-void print_message(char * str, int verbose)
-{
-    if(verbose == 1){
-        printf("%s",str)
-    }else{
-        printf("%s",str)
-    }
-}
-*/
 
-double compute_integral(int xmin, int xmax, int ntasks, int taskID, int step, char * hostname)
+double compute_integral(int xmin, int xmax, int ntasks, int taskID, int step,
+                        char * hostname)
 {
     /* Get each Task's Range.*/
     double task_xmin = taskID * (xmax - xmin) / ntasks;
     double task_xmax = (taskID + 1) * (xmax - xmin) / ntasks;
     double dx   = 0.00001;
-    double task_result = 0;
+    double taskResult = 0;
     double i=0;
-    printf("Task %i step %i host %s : [%.3f,%.3f]\n", taskID, step, hostname, task_xmin, task_xmax);
+    printf("Task %i step %i host %s : [%.3f,%.3f]\n", taskID, step, hostname,
+           task_xmin, task_xmax);
     fflush(stdout);
     
     
@@ -49,9 +41,9 @@ double compute_integral(int xmin, int xmax, int ntasks, int taskID, int step, ch
     for(i=task_xmin; i<task_xmax; i+=dx)
     {
         // Trapezoidal rule
-        task_result += (y(i+dx) - y(i)) * dx / 2.0 +  y(i) * dx;
+        taskResult += (y(i+dx) - y(i)) * dx / 2.0 +  y(i) * dx;
     }
-    return(task_result);
+    return(taskResult);
 }
 
 
@@ -59,13 +51,12 @@ int main(int argc, char * argv[])
 {
     int taskID = -1;
     int ntasks = -1;
-    int nSteps = 100;
-    int step = 0;
-    int verbose = 0;
-    double xmax = 1000;
-    double xmin =  0;
-    double task_result = 0;
-    double glob_result = 0;
+    int nSteps = 100;           // Number of times to do the integration
+    int step = 0;               // Current step
+    double xmax = 1000;         // Upper integration bound
+    double xmin =  0;           // Lower integration bound
+    double taskResult = 0;
+    double globalResult = 0;
     char hostname[250];
     hostname[249]='\0';
 
@@ -79,28 +70,21 @@ int main(int argc, char * argv[])
 
     /* Master Loop */ 
     for(step=0; step<nSteps; step++){
-        if(taskID == 0){
-            //printf("Step : %i\n", step);
-            task_result = compute_integral(xmin, xmax, ntasks, taskID, step,
-                                           hostname);
-
-        }else{
-            task_result = compute_integral(xmin, xmax, ntasks, taskID, step,
-                                           hostname);
-        }
+        taskResult = compute_integral(xmin, xmax, ntasks, taskID, step,
+                                      hostname);
         MPI_Barrier(MPI_COMM_WORLD);    // Ensure every task completes
 
         /* Collect Results */
-        MPI_Reduce(&task_result, &glob_result, 1, MPI_DOUBLE, MPI_SUM, 0, 
+        MPI_Reduce(&taskResult, &globalResult, 1, MPI_DOUBLE, MPI_SUM, 0, 
                    MPI_COMM_WORLD);
 
         if(taskID == 0)
         {
             printf("Step %i host %s Integration from %f to %f of x2 = %f\n\n", step,
-                   hostname, xmin, xmax, glob_result);
+                   hostname, xmin, xmax, globalResult);
             fflush(stdout);
         }
-        glob_result=0;
+        globalResult=0;
     }
 
     MPI_Finalize();
